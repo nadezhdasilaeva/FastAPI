@@ -3,7 +3,7 @@ import uuid
 from fastapi import APIRouter, Response, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
-from database.DataBase_def import get_users, get_temp_users, get_user, check_user, delete_user, reg_user, verify_user, update_user
+from database.DataBase_def import get_users, get_temp_users, get_user, check_user, delete_user, reg_user, verify_user, update_user_emil
 from database.DataBase_model import UserUpdate
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -53,6 +53,6 @@ def verify_user_rout(user_id: uuid.UUID):
 
 
 @router_user.put('/update/{user_id}')
-def update_user_rout(user_id: uuid.UUID, user: UserUpdate):
-    return update_user(user_id, user)
+def update_user_email_rout(user_id: uuid.UUID, email: str, password: str):
+    return update_user_emil(user_id, email, password)
 

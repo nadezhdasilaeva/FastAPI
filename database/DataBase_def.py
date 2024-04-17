@@ -101,20 +101,32 @@ def verify_user(user_id: uuid.UUID):
         return 200
 
 
-def update_user(user_id: uuid.UUID, user: UserUpdate):
-    user.password = hash_password_f(user.password)
+def update_user_emil(user_id: uuid.UUID, email: str, password: str):
+    hash_password = hash_password_f(password)
     with Session(engine) as session:
-        db_user = session.get(User, user_id)
-        print(db_user)
-        if not db_user:
+        user = session.exec(select(User).where(User.id == user_id)).first()
+        if not user:
             raise HTTPException(status_code=404, detail="User not found")
-        user_data = user.model_dump(exclude_unset=True)
-        db_user.sqlmodel_update(user_data)
-        print(db_user)
-        session.add(db_user)
+        if hash_password != user.password:
+            raise HTTPException(status_code=400, detail='Incorrect password')
+        user.sqlmodel_update({'email': email})
+        session.add(user)
         session.commit()
-        session.refresh(db_user)
-        return db_user
+        session.refresh()
+        return user
+    # user.password = hash_password_f(user.password)
+    # with Session(engine) as session:
+    #     db_user = session.get(User, user_id)
+    #     print(db_user)
+    #     if not db_user:
+    #         raise HTTPException(status_code=404, detail="User not found")
+    #     user_data = user.model_dump(exclude_unset=True)
+    #     db_user.sqlmodel_update(user_data)
+    #     print(db_user)
+    #     session.add(db_user)
+    #     session.commit()
+    #     session.refresh(db_user)
+    #     return db_user
 
 
 def get_all_car():

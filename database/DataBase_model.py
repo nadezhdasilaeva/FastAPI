@@ -19,12 +19,6 @@ class User(SQLModel, table=True):
     payments: list['Payment'] = Relationship(back_populates='users')
 
 
-class UpdateUser(SQLModel):
-    def __init__(self, user_email: str):
-        email: str | None = user_email
-        password: str |None = "Password"
-
-
 
 class Car(SQLModel, table=True):
     id: uuid.UUID = Field(primary_key=True, default=None)
