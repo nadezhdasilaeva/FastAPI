@@ -19,6 +19,6 @@ app = FastAPI(
 
 app.include_router(router_user)
 app.include_router(router_car)
-app.include_router(router)
+
 
 uvicorn.run(app, port=8001)
