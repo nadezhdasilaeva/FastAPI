@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordBearer
 # from router import router
 from routers.user import router_user
 from routers.car import router_car
-from routers.test import router
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
