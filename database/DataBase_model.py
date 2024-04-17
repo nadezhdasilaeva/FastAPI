@@ -5,6 +5,7 @@ import uuid
 
 class User(SQLModel, table=True):
     __table_args__ = (UniqueConstraint("email"),)
+
     id: uuid.UUID = Field(primary_key=True, default=None)
     password: str = Field(min_length=64, max_length=64)  # хэш пароля
     role: str  # роль пользователя
@@ -21,6 +22,8 @@ class User(SQLModel, table=True):
 
 
 class Car(SQLModel, table=True):
+    __table_args__ = (UniqueConstraint("car_number"),)
+
     id: uuid.UUID = Field(primary_key=True, default=None)
     brand: str  # марка авто
     model: str  # модель авто

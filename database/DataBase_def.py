@@ -39,6 +39,8 @@ def get_temp_users():
 
 def get_user(user_id: uuid.UUID):
     with Session(engine) as session:
+        if not session.exec(select(User).where(User.id == user_id)).first():
+            raise HTTPException(status_code=404, detail="User not found")
         return session.exec(select(User).where(User.id == user_id)).first()
 
 
@@ -52,16 +54,17 @@ def check_user(email: str, password: str, response: Response):
             raise HTTPException(status_code=400, detail="Incorrect username or password")
         jwt_token = create_jwt_token({'id': str(user.id), 'email': user.email, 'role': user.role})
         create_cookie(response, jwt_token)
-        return 200
+        raise HTTPException(status_code=200)
 
 
 def delete_user(user_id: uuid.UUID):
     with Session(engine) as session:
         user = session.exec(select(User).where(User.id == user_id)).first()
-
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
         session.delete(user)
         session.commit()
-        return 200
+        raise HTTPException(status_code=200)
 
 
 def reg_user(email: str,
@@ -84,9 +87,9 @@ def reg_user(email: str,
         if session.exec(select(User).where(User.email == email)).first() is None:
             session.add(user)
             session.commit()
-            return 200
+            raise HTTPException(status_code=200)
         else:
-            return {'This email is already in use'}
+            raise HTTPException(status_code=400, detail="Email is busy")
 
 
 def verify_user(user_id: uuid.UUID):
@@ -98,35 +101,41 @@ def verify_user(user_id: uuid.UUID):
         session.add(user)
         session.commit()
         session.refresh(user)
-        return 200
+        raise HTTPException(status_code=200)
 
 
-def update_user_emil(user_id: uuid.UUID, email: str, password: str):
+def update_user_email(user_id: uuid.UUID, new_email: str, password: str):
     hash_password = hash_password_f(password)
     with Session(engine) as session:
+        if session.exec(select(User).where(User.email == new_email)).first():
+            raise HTTPException(status_code=400, detail='Email is busy')
         user = session.exec(select(User).where(User.id == user_id)).first()
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         if hash_password != user.password:
             raise HTTPException(status_code=400, detail='Incorrect password')
+        user.sqlmodel_update({'email': new_email})
+        session.add(user)
+        session.commit()
+        session.refresh()
+        return user
+
+
+def update_user_password(user_id: uuid.UUID, email: str, new_password: str, new_password_2: str):
+    if new_password != new_password_2:
+        raise HTTPException(status_code=400, detail="Incorrect password")
+    hash_password = hash_password_f(new_password)
+    with Session(engine) as session:
+        user = session.exec(select(User).where(User.id == user_id)).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        if email != user.email:
+            raise HTTPException(status_code=400, detail='Incorrect email')
         user.sqlmodel_update({'email': email})
         session.add(user)
         session.commit()
         session.refresh()
         return user
-    # user.password = hash_password_f(user.password)
-    # with Session(engine) as session:
-    #     db_user = session.get(User, user_id)
-    #     print(db_user)
-    #     if not db_user:
-    #         raise HTTPException(status_code=404, detail="User not found")
-    #     user_data = user.model_dump(exclude_unset=True)
-    #     db_user.sqlmodel_update(user_data)
-    #     print(db_user)
-    #     session.add(db_user)
-    #     session.commit()
-    #     session.refresh(db_user)
-    #     return db_user
 
 
 def get_all_car():
@@ -136,6 +145,8 @@ def get_all_car():
 
 def get_car(car_id: uuid.UUID):
     with Session(engine) as session:
+        if not session.exec(select(Car).where(Car.id == car_id)).first():
+            raise HTTPException(status_code=404, detail="Car not found")
         return session.exec(select(Car).where(Car.id == car_id)).first()
 
 
@@ -155,12 +166,12 @@ def add_car(brand: str,
     with Session(engine) as session:
         session.add(car)
         session.commit()
-        return 200
+        raise HTTPException(status_code=200)
 
 
 def delete_car(car_id: uuid.UUID):
     with Session(engine) as session:
         session.delete(session.exec(select(Car).where(Car.id == car_id)).first())
         session.commit()
-        return 200
+        raise HTTPException(status_code=200)
 
