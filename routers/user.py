@@ -29,9 +29,8 @@ def get_user_rout(user_id: uuid.UUID):
 
 
 @router_user.post('/sing_in')
-def check_user_rout(form_data: OAuth2PasswordRequestForm = Depends()):
-
-    return check_user(email, password, response)
+def check_user_rout(email: str, password: str):
+    return check_user(email, password)
 
 
 @router_user.delete('/del/')
