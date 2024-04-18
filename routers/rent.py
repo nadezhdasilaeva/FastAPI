@@ -17,11 +17,11 @@ def get_rent_rout(rent_id):
     return get_rent(rent_id)
 
 
-@router.get('/start_rent')
+@router.post('/start_rent')
 def start_rent_rout(user_id: uuid.UUID, car_id: uuid.UUID):
     return start_rent(user_id, car_id)
 
 
-@router.get('/end_rent')
+@router.post('/end_rent')
 def end_rent_rout(rent_id: uuid.UUID):
     return end_rent(rent_id)
