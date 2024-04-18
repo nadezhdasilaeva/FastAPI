@@ -4,7 +4,7 @@ import datetime
 
 from fastapi import HTTPException, Response
 
-from database.DataBase_model import User, Car, Rent, engine
+from database.DataBase_model import User, Car, Rent, engine, Payment
 from sqlmodel import SQLModel, Session, select
 
 from internal.crypto import create_jwt_token, create_cookie
@@ -205,5 +205,29 @@ def end_rent(rent_id: uuid.UUID):
         rent.status = 'end'
 
         session.add(rent)
+        session.commit()
+        raise HTTPException(status_code=200)
+
+
+
+def get_payments():
+    with Session(engine) as session:
+        return session.exec(select(Payment)).all()
+
+
+def get_payment(payment_id):
+    with Session(engine) as session:
+        return session.exec(select(Payment).where(Payment.id == payment_id)).first()
+
+
+def make_payment(user_id: uuid.UUID, rent_id: uuid.UUID, cart_number):
+    payment = Payment(id=uuid.uuid4(),
+                      user_id=user_id,
+                      rent_id=rent_id,
+                      cart_number=cart_number,
+                      data=datetime.datetime.utcnow()
+                      )
+    with Session(engine) as session:
+        session.add(payment)
         session.commit()
         raise HTTPException(status_code=200)

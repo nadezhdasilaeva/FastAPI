@@ -40,7 +40,7 @@ class Rent(SQLModel, table=True):
     id_user: uuid.UUID = Field(default=None, foreign_key='user.id')  # id_пользователя
     car_id: uuid.UUID = Field(default=None, foreign_key='car.id')
     data_rent_start: datetime.datetime  # дата аренды начало
-    data_rent_end: datetime.datetime = None # дата аренды конец
+    data_rent_end: datetime.datetime = None     # дата аренды конец
     status: str     # 'continues' или 'end'
 
     users: list['User'] = Relationship(back_populates='rents')
@@ -52,7 +52,7 @@ class Payment(SQLModel, table=True):
     id: uuid.UUID = Field(primary_key=True, default=None)
     id_rent: uuid.UUID = Field(default=None, foreign_key='rent.id')  # id_аренды
     id_user: uuid.UUID = Field(default=None, foreign_key='user.id')  # id_пользователя
-    last_cart_num: int  # последние 4 цифры карты
+    cart_number: str  # последние 4 цифры карты
     data: datetime.datetime  # дата оплаты
 
     rents: list['Rent'] = Relationship(back_populates='payments')
@@ -67,5 +67,3 @@ sqlite_file_name = "../database.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
 
 engine = create_engine(sqlite_url)
-
-
