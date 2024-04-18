@@ -4,7 +4,7 @@ import datetime
 
 from fastapi import HTTPException, Response
 
-from database.DataBase_model import User, Car, engine, UserUpdate
+from database.DataBase_model import User, Car, Rent, engine
 from sqlmodel import SQLModel, Session, select
 
 from internal.crypto import create_jwt_token, create_cookie
@@ -175,3 +175,35 @@ def delete_car(car_id: uuid.UUID):
         session.commit()
         raise HTTPException(status_code=200)
 
+
+def get_rents():
+    with Session(engine) as session:
+        return session.exec(select(Rent)).all()
+
+
+def get_rent(rent_id: uuid.UUID):
+    with Session(engine) as session:
+        return session.exec(select(Rent).where(Rent.id == rent_id)).first()
+
+
+def start_rent(user_id: uuid.UUID, car_id: uuid.UUID):
+    rent = Rent(id=uuid.uuid4(),
+                user_id=user_id,
+                car_id=car_id,
+                data_rent_start=datetime.datetime.utcnow(),
+                status='continues')
+    with Session(engine) as session:
+        session.add(rent)
+        session.commit()
+        raise HTTPException(status_code=200)
+
+
+def end_rent(rent_id: uuid.UUID):
+    with Session(engine) as session:
+        rent = session.exec(select(Rent).where(Rent.id == rent_id)).one()
+        rent.data_rent_end = datetime.datetime.utcnow()
+        rent.status = 'end'
+
+        session.add(rent)
+        session.commit()
+        raise HTTPException(status_code=200)

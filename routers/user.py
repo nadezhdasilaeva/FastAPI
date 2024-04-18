@@ -4,8 +4,8 @@ from fastapi import APIRouter, Response, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from database.DataBase_def import get_users, get_temp_users, get_user, check_user, delete_user, reg_user, verify_user, \
-    update_user_email, update_user_password, mem
-from database.DataBase_model import UserUpdate
+    update_user_email, update_user_password
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 

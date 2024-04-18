@@ -39,9 +39,9 @@ class Rent(SQLModel, table=True):
     id: uuid.UUID = Field(primary_key=True, default=None)
     id_user: uuid.UUID = Field(default=None, foreign_key='user.id')  # id_пользователя
     car_id: uuid.UUID = Field(default=None, foreign_key='car.id')
-    latitude: float  # широта
-    longitude: float  # долгота
-    data_rent: datetime.datetime  # дата аренды
+    data_rent_start: datetime.datetime  # дата аренды начало
+    data_rent_end: datetime.datetime = None # дата аренды конец
+    status: str     # 'continues' или 'end'
 
     users: list['User'] = Relationship(back_populates='rents')
     payments: list['Payment'] = Relationship(back_populates='rents')
