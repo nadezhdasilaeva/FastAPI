@@ -26,4 +26,4 @@ app.include_router(router_rent)
 def mem_rout():
     return
 
-uvicorn.run(app, port=1488)
+uvicorn.run(app, port=8000)
