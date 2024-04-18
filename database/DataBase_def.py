@@ -231,3 +231,4 @@ def make_payment(user_id: uuid.UUID, rent_id: uuid.UUID, cart_number):
         session.add(payment)
         session.commit()
         raise HTTPException(status_code=200)
+# create_table()
