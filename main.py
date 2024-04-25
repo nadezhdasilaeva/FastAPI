@@ -12,7 +12,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app = FastAPI(
     title="CarShare",
-    version="0.0.1",
+    version="2.2.8",
     headers='test'
 )
 
